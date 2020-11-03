@@ -1,0 +1,5 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="list_element_height">100dp</dimen>
+    <dimen name="ic_size">70dp</dimen>
+</resources>
