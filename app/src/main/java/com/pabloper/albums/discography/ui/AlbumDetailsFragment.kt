@@ -5,50 +5,59 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.pabloper.albums.R
 import com.pabloper.albums.base.ui.InjectActivity
 import com.pabloper.albums.base.ui.MvvmFragment
 import com.pabloper.albums.base.viewmodel.ViewModel
-import com.pabloper.albums.dagger.component.FragmentComponent
+import com.pabloper.albums.dagger.component.fragment.AlbumDetailsFragmentComponent
+import com.pabloper.albums.dagger.module.fragment.AlbumDetailsFragmentModule
 import com.pabloper.albums.discography.network.model.AlbumNetwork
-import com.pabloper.albums.discography.viewmodel.AlbumListViewModel
+import com.pabloper.albums.discography.viewmodel.AlbumDetailsViewModel
 import com.pabloper.albums.util.RxBinderUtil
+import com.pabloper.albums.util.loadRemoteImage
 import javax.inject.Inject
 
-class AlbumListFragment : MvvmFragment<AlbumListViewModel, FragmentComponent>() {
+class AlbumDetailsFragment : MvvmFragment<AlbumDetailsViewModel, AlbumDetailsFragmentComponent>() {
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: AlbumListRecyclerViewAdapter
-    private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var progressBar: ProgressBar
+    private lateinit var imageView: ImageView
+    private var albumId: String = ""
 
     @Inject
-    lateinit var albumListViewModel: AlbumListViewModel
+    lateinit var albumDetailsViewModel: AlbumDetailsViewModel
 
     companion object {
 
         @JvmStatic
-        fun newInstance(): AlbumListFragment {
-            return AlbumListFragment()
+        fun newInstance(albumId: String): AlbumDetailsFragment {
+            val args = Bundle()
+            args.putString(
+                ALBUM_ID,
+                albumId
+            )
+            val fragment = AlbumDetailsFragment()
+            fragment.arguments = args
+            return fragment
         }
+
+        private const val ALBUM_ID = "ALBUM_ID"
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_album_list, container, false)
+        val root = inflater.inflate(R.layout.fragment_album_details, container, false)
         initView(root)
         return root
     }
 
     private fun initView(view: View) {
-        viewManager = LinearLayoutManager(this.context)
-        recyclerView = view.findViewById(R.id.album_recycler_view)
+        albumId = arguments!!.getString(ALBUM_ID, "")
+        imageView = view.findViewById(R.id.album_imageView)
         progressBar = view.findViewById(R.id.loading_progressBar)
     }
 
@@ -57,15 +66,8 @@ class AlbumListFragment : MvvmFragment<AlbumListViewModel, FragmentComponent>() 
         showLoadingBar(true)
     }
 
-
-    private fun albumListReceived(albums: List<AlbumNetwork>) {
-        viewAdapter = AlbumListRecyclerViewAdapter(albums)
-        recyclerView.apply {
-            setHasFixedSize(true)
-            layoutManager = viewManager
-            adapter = viewAdapter
-        }
-        albumListViewModel.subscribeToAlbumPressed(viewAdapter.albumPressedStream())
+    private fun albumReceived(albums: AlbumNetwork) {
+        loadRemoteImage(imageView, albums.url)
         showLoadingBar(false)
     }
 
@@ -85,8 +87,8 @@ class AlbumListFragment : MvvmFragment<AlbumListViewModel, FragmentComponent>() 
     }
 
     override fun bindProperties(rxBinderUtil: RxBinderUtil) {
-        rxBinderUtil.bindProperty(albumListViewModel.getAlbums(), {
-            albumListReceived(it)
+        rxBinderUtil.bindProperty(albumDetailsViewModel.getAlbum(), {
+            albumReceived(it)
         }, {
             showLoadingBar(false)
             showNetworkErrorToast()
@@ -97,11 +99,13 @@ class AlbumListFragment : MvvmFragment<AlbumListViewModel, FragmentComponent>() 
         component().inject(this)
     }
 
-    override fun createComponent(): FragmentComponent {
-        return (activity as InjectActivity).getActivityComponent().plusFragment()
+    override fun createComponent(): AlbumDetailsFragmentComponent {
+        return (activity as InjectActivity)
+            .getActivityComponent()
+            .plusAlbumDetailsComponent(AlbumDetailsFragmentModule(albumId))
     }
 
     override fun getViewModel(): ViewModel {
-        return albumListViewModel
+        return albumDetailsViewModel
     }
 }

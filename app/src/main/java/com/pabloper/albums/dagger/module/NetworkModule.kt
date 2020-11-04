@@ -13,7 +13,7 @@ import javax.inject.Singleton
 @Module
 class NetworkModule {
 
-    private val BASE_URL = "https://jsonplaceholder.typicode.com/"
+    private val BASE_URL = "https://jsonplaceholder.typicode.com"
 
     @Singleton
     @Provides
@@ -28,7 +28,7 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideOkhhtpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
+    fun provideOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(httpLoggingInterceptor)
             .build()

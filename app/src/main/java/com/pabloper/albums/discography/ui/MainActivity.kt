@@ -18,9 +18,9 @@ class MainActivity : InjectActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        fragmentUtil.addFragment(
-            R.id.fragment, AlbumListFragment(),
-            "AlbumListFragment", true
+        fragmentUtil.addFragmentDefault(
+            AlbumListFragment.newInstance(),
+            "AlbumListFragment", false
         )
     }
 

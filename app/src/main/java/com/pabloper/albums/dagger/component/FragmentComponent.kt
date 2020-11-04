@@ -9,4 +9,5 @@ import dagger.Subcomponent
 interface FragmentComponent {
 
     fun inject(albumListFragment: AlbumListFragment)
+
 }

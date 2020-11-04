@@ -1,13 +1,11 @@
 package com.pabloper.albums.util
 
 import android.widget.ImageView
-import com.bumptech.glide.Glide
+import com.squareup.picasso.Picasso
 
 fun loadRemoteImage(imageView: ImageView, url: String?) {
-    Glide
-        .with(imageView.context)
+    Picasso.get()
         .load(url)
-        .centerCrop()
-        .placeholder(android.R.drawable.ic_menu_mapmode)
+        .placeholder(android.R.drawable.ic_media_play)
         .into(imageView)
 }
