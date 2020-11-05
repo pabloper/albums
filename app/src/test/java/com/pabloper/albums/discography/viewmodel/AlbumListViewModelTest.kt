@@ -4,18 +4,11 @@ import com.pabloper.albums.discography.network.AlbumsService
 import com.pabloper.albums.discography.network.model.AlbumNetwork
 import com.pabloper.albums.util.FragmentUtil
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Scheduler
-import io.reactivex.rxjava3.plugins.RxJavaPlugins
-import io.reactivex.rxjava3.schedulers.Schedulers
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mock
 import org.mockito.Mockito
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
 import org.mockito.junit.MockitoJUnitRunner
 
 
